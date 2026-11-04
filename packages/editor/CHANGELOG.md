@@ -8,6 +8,7 @@
 
 ### Bug Fixes
 
+-   PostSchedule: Mark the posts of the month the calendar moves to when the date is typed or reset ([#86298](https://github.com/WordPress/gutenberg/pull/86298)).
 -   Notes: Keep the editor canvas from jumping when a new note is added ([#86283](https://github.com/WordPress/gutenberg/pull/86283)).
 -   Align the Tags field loading status with its suggestions and creation action ([#84633](https://github.com/WordPress/gutenberg/pull/84633)).
 
