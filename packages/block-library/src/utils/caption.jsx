@@ -20,6 +20,7 @@ export function Caption( {
 	placeholder = __( 'Add caption' ),
 	label = __( 'Caption text' ),
 	showToolbarButton = true,
+	showTextLabel = false,
 	excludeElementClassName,
 	className,
 	readOnly,
@@ -59,6 +60,8 @@ export function Caption( {
 		[ isCaptionEmpty ]
 	);
 
+	const toggleLabel = showCaption ? removeLabel : addLabel;
+
 	return (
 		<>
 			{ showToolbarButton && (
@@ -72,9 +75,11 @@ export function Caption( {
 								} );
 							}
 						} }
-						icon={ icon }
-						isPressed={ showCaption }
-						label={ showCaption ? removeLabel : addLabel }
+						icon={ showTextLabel ? undefined : icon }
+						isPressed={ ! showTextLabel && showCaption }
+						label={ toggleLabel }
+						// A text button names the action outright.
+						text={ showTextLabel ? toggleLabel : undefined }
 					/>
 				</BlockControls>
 			) }
