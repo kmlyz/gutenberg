@@ -311,7 +311,10 @@ const receiveQueries = compose( [
  * longer matches. Queries that set `per_page` are unaffected: the selectors
  * derive their page count from `totalItems` and never read the header value.
  *
- * @param queryItems   Query state, with `itemIds` and optional `meta`.
+ * A query that received a single item has no `itemIds`, so it is returned
+ * unchanged.
+ *
+ * @param queryItems   Query state, with optional `itemIds` and `meta`.
  * @param removedItems Removed item IDs, as object keys.
  *
  * @return Updated query state.
@@ -320,6 +323,10 @@ function removeQueryItems(
 	queryItems: QueryState,
 	removedItems: Record< ItemId, boolean >
 ): QueryState {
+	if ( ! queryItems.itemIds ) {
+		return queryItems;
+	}
+
 	const itemIds = queryItems.itemIds.filter(
 		// Holes in the list keep their place: they match no removed item.
 		( itemId ) => ! removedItems[ itemId as ItemId ]
