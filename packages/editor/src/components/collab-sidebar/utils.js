@@ -1,7 +1,15 @@
 import { _x } from '@wordpress/i18n';
 import { getBlockType } from '@wordpress/blocks';
-import { create, getActiveFormat, RichTextData } from '@wordpress/rich-text';
+import {
+	create,
+	getActiveFormat,
+	RichTextData,
+	privateApis as richTextPrivateApis,
+} from '@wordpress/rich-text';
 import { NOTE_FORMAT_NAME } from './constants';
+import { unlock } from '../../lock-unlock';
+
+const { ownsSelection } = unlock( richTextPrivateApis );
 
 /**
  * Sanitizes a note string by trimming leading and trailing whitespace.
@@ -716,13 +724,32 @@ export function pickNoteForCaret( {
 }
 
 /**
- * Whether focus is inside an element, in whichever document it lives.
+ * Whether one of the blocks holds focus. When the selected block supports
+ * `editableRoot`, the canvas is the editing host and holds focus itself, so
+ * the block of the editable owning the selection holds it.
  *
- * @param {?Element} element Element to check.
- * @return {boolean} True when the element contains the active element.
+ * @param {?Document} ownerDocument The blocks' document.
+ * @param {string[]}  clientIds     Block client IDs.
+ * @return {boolean} Whether one of the blocks holds focus.
  */
-export function hasFocusWithin( element ) {
-	return !! element?.contains( element.ownerDocument.activeElement );
+export function isFocusInBlocks( ownerDocument, clientIds ) {
+	// A document keeps its active element and selection after losing focus.
+	if ( ! ownerDocument?.hasFocus() ) {
+		return false;
+	}
+	const { anchorNode } = ownerDocument.defaultView.getSelection();
+	const anchor =
+		anchorNode?.nodeType === anchorNode?.ELEMENT_NODE
+			? anchorNode
+			: anchorNode?.parentElement;
+	const editable = anchor?.closest( '[contenteditable="true"]' );
+	const focusOwner =
+		editable && ownsSelection( editable )
+			? editable
+			: ownerDocument.activeElement;
+	return clientIds.includes(
+		focusOwner?.closest( '[data-block]' )?.dataset.block
+	);
 }
 
 /**
