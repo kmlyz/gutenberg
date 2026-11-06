@@ -268,6 +268,26 @@ describe( 'reducer', () => {
 		} );
 	} );
 
+	it( 'deletes an item that was received alone with a query', () => {
+		const original = deepFreeze( {
+			items: { default: {} },
+			queries: {},
+			itemIsComplete: { default: {} },
+		} );
+		const received = reducer( original, {
+			type: 'RECEIVE_ITEMS',
+			query: { _embed: 'author' },
+			items: { id: 1, name: 'abc' },
+		} );
+		const state = reducer(
+			deepFreeze( received ),
+			removeItems( 'postType', 'attachment', 1 )
+		);
+
+		expect( state.items ).toEqual( { default: {} } );
+		expect( state.queries ).toEqual( received.queries );
+	} );
+
 	it( 'deletes an item', () => {
 		const kind = 'root';
 		const name = 'menu';

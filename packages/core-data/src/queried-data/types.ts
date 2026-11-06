@@ -57,9 +57,10 @@ export interface QueriedMeta {
 
 /**
  * The state of one query: the IDs of its items, in order, and its metadata.
+ * A query that only received a single item has no `itemIds`.
  */
 export interface QueryState {
-	itemIds: ReadonlyArray< ItemId | undefined >;
+	itemIds?: ReadonlyArray< ItemId | undefined >;
 	meta?: QueriedMeta | null;
 }
 
